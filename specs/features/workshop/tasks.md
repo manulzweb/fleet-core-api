@@ -1,0 +1,22 @@
+# Workshops Tasks
+
+- [x] WOR-T001: Create Workshop entity.
+- [x] WOR-T002: Create workshop migration.
+- [x] WOR-T003: Define workshop persistence interface (superseded: services inject the concrete DAO).
+- [x] WOR-T004: Implement Workshop DAO.
+- [x] WOR-T005: Create workshop creation DTO.
+- [x] WOR-T006: Create workshop update DTO.
+- [x] WOR-T007: Create workshop response DTO.
+- [x] WOR-T008: Implement Workshop mapper.
+- [x] WOR-T009: Implement WorkshopsService.
+- [x] WOR-T010: Implement workshop registration.
+- [x] WOR-T011: Implement workshop updates.
+- [x] WOR-T012: Implement listing of active workshops.
+- [x] WOR-T013: Implement retrieval by identifier.
+- [x] WOR-T014: Implement workshop activation and deactivation.
+- [x] WOR-T015: Prevent assignments to inactive workshops.
+- [x] WOR-T016: Preserve historical maintenance references.
+- [x] WOR-T017: Enforce ADMIN permissions for management operations.
+- [x] WOR-T018: Add WorkshopsService unit tests.
+- [x] WOR-T019: Add workshop endpoint end-to-end tests.
+- [x] WOR-T020: Verify all acceptance criteria.
