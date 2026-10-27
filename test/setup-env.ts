@@ -6,4 +6,6 @@ process.env.DB_PASSWORD ??= 'postgres';
 process.env.DB_NAME = process.env.DB_NAME_TEST ?? 'fleetcore_test';
 process.env.JWT_SECRET = 'test-secret-1234';
 process.env.JWT_EXPIRES_IN = '1h';
+process.env.THROTTLE_LIMIT = '100000';
+process.env.THROTTLE_LOGIN_LIMIT = '100000';
 process.env.API_KEYS = 'test-key-1,test-key-2';
