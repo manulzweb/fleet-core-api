@@ -22,3 +22,13 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+*.tsbuildinfo
+
+# build / test output
+dist/
+coverage/
+
+# local-only files
+CLEAN_CODE.md
+.claude/
+.husky/_
