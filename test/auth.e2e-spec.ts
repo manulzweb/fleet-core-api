@@ -19,36 +19,30 @@ describe('Auth & authorization (e2e)', () => {
   afterAll(() => closeApp(app));
 
   it('registers a TECHNICIAN and ignores role injection', async () => {
-    const res = await http()
-      .post('/api/v1/auth/register')
-      .send({
-        name: 'Nuevo',
-        email: 'nuevo@fleetcore.local',
-        password: 'SecurePass123',
-      });
+    const res = await http().post('/api/v1/auth/register').send({
+      name: 'Nuevo',
+      email: 'nuevo@fleetcore.local',
+      password: 'SecurePass123',
+    });
     expect(res.status).toBe(201);
     expect(res.body.data.role).toBe('TECHNICIAN');
     expect(res.body.data.passwordHash).toBeUndefined();
 
-    const bad = await http()
-      .post('/api/v1/auth/register')
-      .send({
-        name: 'X',
-        email: 'x@fleetcore.local',
-        password: 'SecurePass123',
-        role: 'ADMIN',
-      });
+    const bad = await http().post('/api/v1/auth/register').send({
+      name: 'X',
+      email: 'x@fleetcore.local',
+      password: 'SecurePass123',
+      role: 'ADMIN',
+    });
     expect(bad.status).toBe(400);
   });
 
   it('rejects duplicate email with 409', async () => {
-    const res = await http()
-      .post('/api/v1/auth/register')
-      .send({
-        name: 'Dup',
-        email: 'tech1@fleetcore.local',
-        password: 'SecurePass123',
-      });
+    const res = await http().post('/api/v1/auth/register').send({
+      name: 'Dup',
+      email: 'tech1@fleetcore.local',
+      password: 'SecurePass123',
+    });
     expect(res.status).toBe(409);
     expect(res.body).toMatchObject({
       success: false,
