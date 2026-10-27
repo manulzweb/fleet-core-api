@@ -1,3 +1,4 @@
+// src/app.setup.ts
 import {
   INestApplication,
   ValidationPipe,
@@ -36,7 +37,10 @@ export function configureSecurity(
   else if (!production) app.enableCors();
 }
 
-/** Mounts Swagger UI at /api/docs; skipped in production. */
+/**
+ * Mounts Swagger UI at /api/docs; skipped in production.
+ * @returns whether Swagger was enabled.
+ */
 export function setupSwagger(
   app: INestApplication,
   env: NodeJS.ProcessEnv = process.env,

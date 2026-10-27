@@ -1,3 +1,4 @@
+// src/common/guards/roles.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -8,6 +9,11 @@ import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY, ROLES_KEY } from '../decorators/index.js';
 import { RoleCode } from '../enums/index.js';
 
+/**
+ * Global authorization guard. Enforces `@Roles()` metadata; routes that are
+ * public or declare no roles are allowed.
+ * @throws ForbiddenException when the user's role is not in the allowed list.
+ */
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}

@@ -1,3 +1,4 @@
+// src/common/interceptors/response.interceptor.ts
 import {
   CallHandler,
   ExecutionContext,
@@ -6,6 +7,10 @@ import {
 } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 
+/**
+ * Wraps successful responses in the standard envelope
+ * (`success: true`, status, `data`, timestamp). 204 responses are left empty.
+ */
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {

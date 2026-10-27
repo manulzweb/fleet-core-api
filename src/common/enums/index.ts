@@ -1,3 +1,4 @@
+// src/common/enums/index.ts
 export enum RoleCode {
   ADMIN = 'ADMIN',
   TECHNICIAN = 'TECHNICIAN',
@@ -21,6 +22,7 @@ export enum MaintenanceStatus {
   CANCELLED = 'CANCELLED',
 }
 
+/** Statuses of a maintenance that is still open (not completed or cancelled). */
 export const ACTIVE_MAINTENANCE_STATUSES = [
   MaintenanceStatus.SCHEDULED,
   MaintenanceStatus.IN_PROGRESS,

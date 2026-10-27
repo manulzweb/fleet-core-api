@@ -1,3 +1,4 @@
+// lint-staged.config.mjs
 export default {
   '**/*.ts': (files) => [
     'tsc --noEmit -p tsconfig.json',

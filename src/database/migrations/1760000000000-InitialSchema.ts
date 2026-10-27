@@ -1,5 +1,7 @@
+// src/database/migrations/1760000000000-InitialSchema.ts
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
+/** Creates the initial schema: all tables, constraints and indexes. */
 export class InitialSchema1760000000000 implements MigrationInterface {
   name = 'InitialSchema1760000000000';
 

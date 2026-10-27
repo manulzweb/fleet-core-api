@@ -12,6 +12,7 @@ import {
   validateSync,
 } from 'class-validator';
 
+/** Supported values for `NODE_ENV`. */
 export enum Environment {
   Local = 'local',
   Development = 'development',
@@ -20,6 +21,7 @@ export enum Environment {
   Production = 'production',
 }
 
+/** Schema (with defaults) of the environment variables the app accepts. */
 export class EnvironmentVariables {
   @IsEnum(Environment)
   @IsOptional()
@@ -82,6 +84,11 @@ export class EnvironmentVariables {
   CORS_ORIGINS?: string;
 }
 
+/**
+ * ConfigModule `validate` hook: converts and validates raw env vars and, in
+ * production, rejects weak or example secrets.
+ * @throws Error when validation fails.
+ */
 export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
@@ -109,8 +116,10 @@ export function validate(config: Record<string, unknown>) {
   return validatedConfig;
 }
 
+/** Sample API keys shipped in example configs; forbidden in production. */
 const EXAMPLE_API_KEYS = ['demo-key-partner-1', 'demo-key-partner-2'];
 
+/** Returns the list of production-only problems with JWT_SECRET and API_KEYS. */
 function validateProductionSecrets(config: EnvironmentVariables): string[] {
   const problems: string[] = [];
   const secret = config.JWT_SECRET;

@@ -1,3 +1,4 @@
+// test/helpers.ts
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Client } from 'pg';
@@ -8,7 +9,9 @@ import { configureApp } from '../src/app.setup.js';
 import dataSource from '../src/database/data-source.js';
 import { seed } from '../src/database/seed.js';
 
+/** Password shared by every seeded user. */
 export const PASSWORD = 'Passw0rd!123';
+/** Fixed ids of the seeded records (see src/database/seed.ts). */
 export const ids = {
   admin: '019a0000-0000-7000-8000-000000000010',
   tech1: '019a0000-0000-7000-8000-000000000011',
@@ -24,6 +27,7 @@ export const ids = {
   mntInProgress: '019a0000-0000-7000-8000-000000000050', // mech 21 (tech2)
 };
 
+/** Creates the per-worker test database if it does not exist yet. */
 async function ensureDatabase() {
   const client = new Client({
     host: process.env.DB_HOST,
@@ -41,6 +45,7 @@ async function ensureDatabase() {
   await client.end();
 }
 
+/** Boots the app against a migrated, freshly seeded test database. */
 export async function createApp(): Promise<INestApplication> {
   await ensureDatabase();
   if (!dataSource.isInitialized) await dataSource.initialize();
@@ -55,6 +60,7 @@ export async function createApp(): Promise<INestApplication> {
   return app;
 }
 
+/** Truncates all tables and re-seeds them. */
 export async function resetDb(ds: DataSource) {
   await ds.query(
     'TRUNCATE maintenances, mechanics, workshops, vehicles, users, roles CASCADE',
@@ -62,11 +68,13 @@ export async function resetDb(ds: DataSource) {
   await seed(ds);
 }
 
+/** Closes the app and the shared data source. */
 export async function closeApp(app: INestApplication) {
   await app.close();
   if (dataSource.isInitialized) await dataSource.destroy();
 }
 
+/** Logs in through the API and returns the access token. */
 export async function login(
   app: INestApplication,
   email: string,
@@ -78,11 +86,13 @@ export async function login(
   return res.body.data?.accessToken as string;
 }
 
+/** Access token for the seeded admin. */
 export const asAdmin = (app: INestApplication) =>
   login(app, 'admin@fleetcore.local');
 export const asTech1 = (app: INestApplication) =>
   login(app, 'tech1@fleetcore.local');
 export const asTech2 = (app: INestApplication) =>
   login(app, 'tech2@fleetcore.local');
+/** Builds the Authorization header for a Bearer token. */
 export const auth = (t: string) => ({ Authorization: `Bearer ${t}` });
 export { request };

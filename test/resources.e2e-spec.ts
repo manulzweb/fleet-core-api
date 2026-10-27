@@ -1,3 +1,4 @@
+// test/resources.e2e-spec.ts
 import { INestApplication } from '@nestjs/common';
 import {
   asAdmin,

@@ -1,7 +1,9 @@
+// src/common/dto/pagination-query.dto.ts
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
+/** Query parameters for pagination: 1-based `page` and `limit` (max 100). */
 export class PaginationQueryDto {
   @ApiPropertyOptional({ default: 1 })
   @IsOptional()
