@@ -1,3 +1,4 @@
+// src/modules/auth/auth.service.spec.ts
 import { UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { RoleCode } from '../../common/enums/index.js';

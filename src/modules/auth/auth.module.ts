@@ -1,3 +1,4 @@
+// src/modules/auth/auth.module.ts
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -8,6 +9,7 @@ import { UsersModule } from '../users/users.module.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 
+/** Wires JWT signing and registers the global JWT authentication and role-based guards. */
 @Global()
 @Module({
   imports: [

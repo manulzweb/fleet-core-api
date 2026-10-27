@@ -1,3 +1,4 @@
+// src/modules/users/users.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserDao } from './dao/user.dao.js';
@@ -6,6 +7,7 @@ import { UserEntity } from './entities/user.entity.js';
 import { UsersController } from './users.controller.js';
 import { UsersService } from './users.service.js';
 
+/** Users and roles persistence, administration endpoints and the exported `UsersService`. */
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, Role])],
   controllers: [UsersController],

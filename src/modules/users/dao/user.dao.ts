@@ -1,9 +1,11 @@
+// src/modules/users/dao/user.dao.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from '../entities/role.entity.js';
 import { UserEntity } from '../entities/user.entity.js';
 
+/** Data access for users and roles. */
 @Injectable()
 export class UserDao {
   constructor(
@@ -28,10 +30,12 @@ export class UserDao {
     return this.repository.findOne({ where: { id } });
   }
 
+  /** Finds a user by exact email match; the role is eager-loaded. */
   async findByEmail(email: string): Promise<UserEntity | null> {
     return this.repository.findOne({ where: { email } });
   }
 
+  /** Returns `[users, total]` for a 1-based page, ordered by creation date then id. */
   async findPaginated(
     page: number,
     limit: number,
@@ -43,6 +47,7 @@ export class UserDao {
     });
   }
 
+  /** Finds a role by its code (e.g. `ADMIN`). */
   async findRoleByCode(code: string): Promise<Role | null> {
     return this.roleRepository.findOne({ where: { code } });
   }

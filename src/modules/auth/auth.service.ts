@@ -1,3 +1,4 @@
+// src/modules/auth/auth.service.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -9,6 +10,7 @@ import { RegisterDto } from './dto/register.dto.js';
 
 const BCRYPT_ROUNDS = 10;
 
+/** Registration and credential-based login issuing JWT access tokens. */
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,6 +18,10 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
+  /**
+   * Hashes the password with bcrypt and creates a TECHNICIAN user.
+   * @throws ConflictException if the email is already registered.
+   */
   async register(dto: RegisterDto) {
     const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
     const user = await this.users.create(
@@ -26,6 +32,10 @@ export class AuthService {
     return { id, name, email, role };
   }
 
+  /**
+   * Validates credentials and signs a JWT (`sub` = user id, `role` = role code).
+   * @throws UnauthorizedException for unknown email, inactive user or wrong password (same message for all).
+   */
   async login(dto: LoginDto) {
     const user = await this.users.findByEmail(dto.email);
     const ok =
