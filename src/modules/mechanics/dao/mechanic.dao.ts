@@ -5,7 +5,10 @@ import { Mechanic } from '../entities/mechanic.entity.js';
 
 @Injectable()
 export class MechanicDao {
-  constructor(@InjectRepository(Mechanic) private readonly repository: Repository<Mechanic>) {}
+  constructor(
+    @InjectRepository(Mechanic)
+    private readonly repository: Repository<Mechanic>,
+  ) {}
 
   async create(data: {
     name: string;
@@ -18,8 +21,13 @@ export class MechanicDao {
     return this.repository.save(mechanic);
   }
 
-  async findById(id: string, manager?: EntityManager): Promise<Mechanic | null> {
-    const repository = manager ? manager.getRepository(Mechanic) : this.repository;
+  async findById(
+    id: string,
+    manager?: EntityManager,
+  ): Promise<Mechanic | null> {
+    const repository = manager
+      ? manager.getRepository(Mechanic)
+      : this.repository;
     return repository.findOne({ where: { id } });
   }
 
@@ -31,7 +39,11 @@ export class MechanicDao {
     return this.repository.findOne({ where: { userId } });
   }
 
-  async findPaginated(page: number, limit: number, isActive?: boolean): Promise<[Mechanic[], number]> {
+  async findPaginated(
+    page: number,
+    limit: number,
+    isActive?: boolean,
+  ): Promise<[Mechanic[], number]> {
     return this.repository.findAndCount({
       where: isActive === undefined ? {} : { isActive },
       order: { name: 'ASC', id: 'ASC' },

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles, User } from '../../common/decorators/index.js';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto.js';
@@ -38,7 +46,10 @@ export class UsersController {
 
   @Roles(RoleCode.ADMIN)
   @Patch(':id/status')
-  status(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateUserStatusDto) {
+  status(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateUserStatusDto,
+  ) {
     return this.users.setStatus(id, dto.isActive);
   }
 }

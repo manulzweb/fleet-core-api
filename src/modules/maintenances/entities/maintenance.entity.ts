@@ -1,6 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity.js';
-import { MaintenanceStatus, MaintenanceType } from '../../../common/enums/index.js';
+import {
+  MaintenanceStatus,
+  MaintenanceType,
+} from '../../../common/enums/index.js';
 import { Mechanic } from '../../mechanics/entities/mechanic.entity.js';
 import { Vehicle } from '../../vehicles/entities/vehicle.entity.js';
 import { Workshop } from '../../workshops/entities/workshop.entity.js';

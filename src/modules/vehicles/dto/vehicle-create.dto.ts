@@ -10,7 +10,9 @@ export class CreateVehicleDto {
   @ApiProperty({ example: 'ABC123' })
   @IsString()
   @Transform(plateTransform)
-  @Matches(/^[A-Z0-9]{3,20}$/, { message: 'plate must be 3-20 alphanumeric characters' })
+  @Matches(/^[A-Z0-9]{3,20}$/, {
+    message: 'plate must be 3-20 alphanumeric characters',
+  })
   plate: string;
 
   @ApiProperty() @IsString() @MaxLength(80) brand: string;

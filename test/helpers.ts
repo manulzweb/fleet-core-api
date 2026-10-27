@@ -33,7 +33,10 @@ async function ensureDatabase() {
     database: 'postgres',
   });
   await client.connect();
-  const { rowCount } = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [process.env.DB_NAME]);
+  const { rowCount } = await client.query(
+    'SELECT 1 FROM pg_database WHERE datname = $1',
+    [process.env.DB_NAME],
+  );
   if (!rowCount) await client.query(`CREATE DATABASE "${process.env.DB_NAME}"`);
   await client.end();
 }
@@ -43,7 +46,9 @@ export async function createApp(): Promise<INestApplication> {
   if (!dataSource.isInitialized) await dataSource.initialize();
   await dataSource.runMigrations();
   await resetDb(dataSource);
-  const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+  const moduleRef = await Test.createTestingModule({
+    imports: [AppModule],
+  }).compile();
   const app = moduleRef.createNestApplication();
   configureApp(app);
   await app.init();
@@ -51,7 +56,9 @@ export async function createApp(): Promise<INestApplication> {
 }
 
 export async function resetDb(ds: DataSource) {
-  await ds.query('TRUNCATE maintenances, mechanics, workshops, vehicles, users, roles CASCADE');
+  await ds.query(
+    'TRUNCATE maintenances, mechanics, workshops, vehicles, users, roles CASCADE',
+  );
   await seed(ds);
 }
 
@@ -60,13 +67,22 @@ export async function closeApp(app: INestApplication) {
   if (dataSource.isInitialized) await dataSource.destroy();
 }
 
-export async function login(app: INestApplication, email: string, password = PASSWORD) {
-  const res = await request(app.getHttpServer()).post('/api/v1/auth/login').send({ email, password });
+export async function login(
+  app: INestApplication,
+  email: string,
+  password = PASSWORD,
+) {
+  const res = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email, password });
   return res.body.data?.accessToken as string;
 }
 
-export const asAdmin = (app: INestApplication) => login(app, 'admin@fleetcore.local');
-export const asTech1 = (app: INestApplication) => login(app, 'tech1@fleetcore.local');
-export const asTech2 = (app: INestApplication) => login(app, 'tech2@fleetcore.local');
+export const asAdmin = (app: INestApplication) =>
+  login(app, 'admin@fleetcore.local');
+export const asTech1 = (app: INestApplication) =>
+  login(app, 'tech1@fleetcore.local');
+export const asTech2 = (app: INestApplication) =>
+  login(app, 'tech2@fleetcore.local');
 export const auth = (t: string) => ({ Authorization: `Bearer ${t}` });
 export { request };

@@ -84,11 +84,20 @@ export class InitialSchema1760000000000 implements MigrationInterface {
     await q.query(`CREATE UNIQUE INDEX uq_mnt_vehicle_active ON maintenances (vehicle_id)
       WHERE status IN ('SCHEDULED','IN_PROGRESS')`);
     await q.query(`CREATE INDEX idx_mnt_vehicle ON maintenances (vehicle_id)`);
-    await q.query(`CREATE INDEX idx_mnt_mechanic ON maintenances (mechanic_id)`);
+    await q.query(
+      `CREATE INDEX idx_mnt_mechanic ON maintenances (mechanic_id)`,
+    );
   }
 
   async down(q: QueryRunner): Promise<void> {
-    for (const t of ['maintenances', 'workshops', 'mechanics', 'vehicles', 'users', 'roles']) {
+    for (const t of [
+      'maintenances',
+      'workshops',
+      'mechanics',
+      'vehicles',
+      'users',
+      'roles',
+    ]) {
       await q.query(`DROP TABLE IF EXISTS ${t}`);
     }
   }

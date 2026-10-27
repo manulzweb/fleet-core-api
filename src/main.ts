@@ -17,9 +17,14 @@ async function bootstrap() {
     .addBearerAuth()
     .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'x-api-key')
     .build();
-  SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, swaggerConfig), {
-    customSiteTitle: 'FleetCore API Docs',
-  });
+  SwaggerModule.setup(
+    'api/docs',
+    app,
+    SwaggerModule.createDocument(app, swaggerConfig),
+    {
+      customSiteTitle: 'FleetCore API Docs',
+    },
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }

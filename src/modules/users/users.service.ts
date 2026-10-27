@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { toPage } from '../../common/dto/page.js';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto.js';
 import { RoleCode } from '../../common/enums/index.js';
@@ -24,9 +28,15 @@ export class UsersService {
     const role = await this.dao.findRoleByCode(roleCode);
     if (!role) throw new NotFoundException(`Role ${roleCode} not found`);
     try {
-      return await this.dao.create({ ...data, role, roleId: role.id, isActive: true });
+      return await this.dao.create({
+        ...data,
+        role,
+        roleId: role.id,
+        isActive: true,
+      });
     } catch (e: any) {
-      if (e?.code === '23505') throw new ConflictException('Email is already registered');
+      if (e?.code === '23505')
+        throw new ConflictException('Email is already registered');
       throw e;
     }
   }
@@ -42,7 +52,11 @@ export class UsersService {
   }
 
   async list(q: PaginationQueryDto) {
-    return toPage(await this.dao.findPaginated(q.page, q.limit), q, UserMapper.toResponse);
+    return toPage(
+      await this.dao.findPaginated(q.page, q.limit),
+      q,
+      UserMapper.toResponse,
+    );
   }
 
   async update(id: string, dto: UpdateUserDto) {

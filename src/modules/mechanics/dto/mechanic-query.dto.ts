@@ -6,7 +6,9 @@ import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto.js'
 export class MechanicQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @Transform(({ value }) => (value === undefined ? value : value === true || value === 'true'))
+  @Transform(({ value }) =>
+    value === undefined ? value : value === true || value === 'true',
+  )
   @IsBoolean()
   isActive?: boolean;
 }

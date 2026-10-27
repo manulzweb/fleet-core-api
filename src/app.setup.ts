@@ -1,4 +1,8 @@
-import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 
 /** Shared HTTP configuration used by main.ts and the e2e tests. */
 export function configureApp(app: INestApplication) {

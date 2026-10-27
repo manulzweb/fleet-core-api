@@ -9,7 +9,12 @@ import { MaintenancesController } from './maintenances.controller.js';
 import { MaintenancesService } from './maintenances.service.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Maintenance]), VehiclesModule, MechanicsModule, WorkshopsModule],
+  imports: [
+    TypeOrmModule.forFeature([Maintenance]),
+    VehiclesModule,
+    MechanicsModule,
+    WorkshopsModule,
+  ],
   controllers: [MaintenancesController],
   providers: [MaintenancesService, MaintenanceDao],
   exports: [MaintenancesService],
