@@ -1,3 +1,4 @@
+// src/modules/maintenances/dao/maintenance.dao.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
@@ -8,14 +9,19 @@ import {
 } from '../../../common/enums/index.js';
 import { Maintenance } from '../entities/maintenance.entity.js';
 
+/** Optional equality filters for listing maintenances. */
 export interface MaintenanceFilter {
   vehicleId?: string;
   mechanicId?: string;
   status?: MaintenanceStatus;
 }
 
+/** Relations eagerly loaded for read models. */
 const RELATIONS = { vehicle: true, mechanic: true, workshop: true } as const;
 
+/**
+ * Persistence layer for {@link Maintenance}. Write methods require an EntityManager so they join the caller's transaction.
+ */
 @Injectable()
 export class MaintenanceDao {
   constructor(
@@ -23,6 +29,9 @@ export class MaintenanceDao {
     private readonly repository: Repository<Maintenance>,
   ) {}
 
+  /**
+   * Inserts a maintenance within the given transaction; completion fields start as null.
+   */
   async create(
     data: {
       type: MaintenanceType;
@@ -48,6 +57,7 @@ export class MaintenanceDao {
     return repository.save(maintenance);
   }
 
+  /** Finds by id with vehicle, mechanic and workshop loaded. */
   async findById(
     id: string,
     manager?: EntityManager,
@@ -73,6 +83,9 @@ export class MaintenanceDao {
     return repository.findOne({ where: { id }, relations: RELATIONS });
   }
 
+  /**
+   * Returns `[rows, total]` matching the filter, newest scheduled start first.
+   */
   async findPaginated(
     filter: MaintenanceFilter,
     page: number,
@@ -87,6 +100,9 @@ export class MaintenanceDao {
     });
   }
 
+  /**
+   * COMPLETED maintenances of a vehicle with mechanic and workshop, latest completion first.
+   */
   async findCompletedByVehicle(vehicleId: string): Promise<Maintenance[]> {
     return this.repository.find({
       where: { vehicleId, status: MaintenanceStatus.COMPLETED },
@@ -95,6 +111,10 @@ export class MaintenanceDao {
     });
   }
 
+  /**
+   * Whether the mechanic has an active (SCHEDULED or IN_PROGRESS) maintenance overlapping [start, end).
+   * Windows are half-open, so back-to-back maintenances do not overlap. Mirrors the `excl_mnt_mechanic_overlap` DB constraint.
+   */
   async mechanicHasOverlap(
     mechanicId: string,
     start: Date,
@@ -113,6 +133,7 @@ export class MaintenanceDao {
       .getExists();
   }
 
+  /** Saves changes to a maintenance within the given transaction. */
   async update(
     maintenance: Maintenance,
     manager: EntityManager,

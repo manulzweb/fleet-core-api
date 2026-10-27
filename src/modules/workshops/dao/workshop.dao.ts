@@ -1,8 +1,10 @@
+// src/modules/workshops/dao/workshop.dao.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Workshop } from '../entities/workshop.entity.js';
 
+/** Persistence layer for {@link Workshop}. */
 @Injectable()
 export class WorkshopDao {
   constructor(
@@ -10,6 +12,7 @@ export class WorkshopDao {
     private readonly repository: Repository<Workshop>,
   ) {}
 
+  /** Inserts and returns a new workshop. */
   async create(data: {
     name: string;
     address: string;
@@ -19,6 +22,7 @@ export class WorkshopDao {
     return this.repository.save(workshop);
   }
 
+  /** Finds by id; pass `manager` to run inside a transaction. */
   async findById(
     id: string,
     manager?: EntityManager,
@@ -29,6 +33,9 @@ export class WorkshopDao {
     return repository.findOne({ where: { id } });
   }
 
+  /**
+   * Returns `[rows, total]` ordered by name; `onlyActive` restricts to active workshops.
+   */
   async findPaginated(
     page: number,
     limit: number,
@@ -42,6 +49,7 @@ export class WorkshopDao {
     });
   }
 
+  /** Saves changes to an existing workshop. */
   async update(workshop: Workshop): Promise<Workshop> {
     return this.repository.save(workshop);
   }

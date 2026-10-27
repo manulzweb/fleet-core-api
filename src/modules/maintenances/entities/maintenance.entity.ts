@@ -1,3 +1,4 @@
+// src/modules/maintenances/entities/maintenance.entity.ts
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity.js';
 import {
@@ -8,6 +9,10 @@ import { Mechanic } from '../../mechanics/entities/mechanic.entity.js';
 import { Vehicle } from '../../vehicles/entities/vehicle.entity.js';
 import { Workshop } from '../../workshops/entities/workshop.entity.js';
 
+/**
+ * A maintenance job assigned to a mechanic at a workshop for a vehicle.
+ * Completion fields stay null until the maintenance is COMPLETED.
+ */
 @Entity('maintenances')
 export class Maintenance extends BaseEntity {
   @Column({ type: 'varchar', length: 30 })
@@ -16,6 +21,7 @@ export class Maintenance extends BaseEntity {
   @Column({ type: 'text' })
   description: string;
 
+  /** Odometer reading (km) when scheduled. */
   @Column({ name: 'initial_mileage', type: 'integer' })
   initialMileage: number;
 

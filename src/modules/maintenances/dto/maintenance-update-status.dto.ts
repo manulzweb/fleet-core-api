@@ -1,3 +1,4 @@
+// src/modules/maintenances/dto/maintenance-update-status.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -20,6 +21,7 @@ export class UpdateMaintenanceStatusDto {
 
   @ApiPropertyOptional() @IsOptional() @IsString() workPerformed?: string;
 
+  /** Final cost in currency units, up to 2 decimals. */
   @ApiPropertyOptional()
   @IsOptional()
   @Type(() => Number)
@@ -33,6 +35,7 @@ export class UpdateMaintenanceStatusDto {
   @IsDate()
   completedAt?: Date;
 
+  /** Odometer reading at completion; must be >= initialMileage. */
   @ApiPropertyOptional()
   @IsOptional()
   @Type(() => Number)

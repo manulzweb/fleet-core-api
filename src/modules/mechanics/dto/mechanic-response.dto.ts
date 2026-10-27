@@ -1,5 +1,7 @@
+// src/modules/mechanics/dto/mechanic-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 
+/** Public representation of a mechanic. */
 export class MechanicResponseDto {
   @ApiProperty() id: string;
   @ApiProperty() name: string;

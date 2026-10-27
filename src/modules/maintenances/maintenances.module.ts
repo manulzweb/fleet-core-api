@@ -1,3 +1,4 @@
+// src/modules/maintenances/maintenances.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MaintenanceDao } from './dao/maintenance.dao.js';
@@ -8,6 +9,9 @@ import { WorkshopsModule } from '../workshops/workshops.module.js';
 import { MaintenancesController } from './maintenances.controller.js';
 import { MaintenancesService } from './maintenances.service.js';
 
+/**
+ * Maintenances feature module; depends on vehicles, mechanics and workshops.
+ */
 @Module({
   imports: [
     TypeOrmModule.forFeature([Maintenance]),

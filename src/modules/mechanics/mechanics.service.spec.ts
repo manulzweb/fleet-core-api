@@ -1,3 +1,4 @@
+// src/modules/mechanics/mechanics.service.spec.ts
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { MechanicsService } from './mechanics.service.js';
 

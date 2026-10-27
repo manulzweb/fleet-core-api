@@ -1,3 +1,4 @@
+// src/modules/workshops/workshops.controller.ts
 import {
   Body,
   Controller,
@@ -17,28 +18,37 @@ import { UpdateWorkshopDto } from './dto/workshop-update.dto.js';
 import { WorkshopQueryDto } from './dto/workshop-query.dto.js';
 import { WorkshopsService } from './workshops.service.js';
 
+/**
+ * Workshops CRUD. Reads are open to any authenticated role; writes are ADMIN only.
+ */
 @ApiTags('workshops')
 @ApiBearerAuth()
 @Controller('workshops')
 export class WorkshopsController {
   constructor(private readonly workshops: WorkshopsService) {}
 
+  /** Creates a workshop (ADMIN only). */
   @Roles(RoleCode.ADMIN)
   @Post()
   create(@Body() dto: CreateWorkshopDto) {
     return this.workshops.create(dto);
   }
 
+  /**
+   * Lists workshops; non-ADMIN callers only see active ones, ADMIN may pass `includeInactive`.
+   */
   @Get()
   list(@Query() q: WorkshopQueryDto, @User('role') role: RoleCode) {
     return this.workshops.list(q, role);
   }
 
+  /** Gets a workshop by id. 404 if not found. */
   @Get(':id')
   get(@Param('id', ParseUUIDPipe) id: string) {
     return this.workshops.getById(id);
   }
 
+  /** Updates a workshop (ADMIN only). 404 if not found. */
   @Roles(RoleCode.ADMIN)
   @Patch(':id')
   update(
@@ -48,6 +58,7 @@ export class WorkshopsController {
     return this.workshops.update(id, dto);
   }
 
+  /** Activates or deactivates a workshop (ADMIN only). */
   @Roles(RoleCode.ADMIN)
   @Patch(':id/status')
   status(

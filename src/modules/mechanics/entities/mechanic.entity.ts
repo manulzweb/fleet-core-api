@@ -1,7 +1,9 @@
+// src/modules/mechanics/entities/mechanic.entity.ts
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity.js';
 import { UserEntity } from '../../users/entities/user.entity.js';
 
+/** A workshop technician who performs maintenances; `email` is unique. */
 @Entity('mechanics')
 export class Mechanic extends BaseEntity {
   @Column({ type: 'varchar', length: 120 })

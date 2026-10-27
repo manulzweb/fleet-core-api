@@ -1,3 +1,4 @@
+// src/modules/mechanics/dto/mechanic-create.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
@@ -10,6 +11,7 @@ import {
 } from 'class-validator';
 import { normalizeEmail } from '../../../common/utils/normalize-email.js';
 
+/** Payload to create a mechanic; email is normalized. */
 export class CreateMechanicDto {
   @ApiProperty() @IsString() @MinLength(1) @MaxLength(120) name: string;
 

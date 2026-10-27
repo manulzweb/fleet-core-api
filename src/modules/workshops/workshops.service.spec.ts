@@ -1,3 +1,4 @@
+// src/modules/workshops/workshops.service.spec.ts
 import { NotFoundException } from '@nestjs/common';
 import { RoleCode } from '../../common/enums/index.js';
 import { WorkshopsService } from './workshops.service.js';
