@@ -1,0 +1,23 @@
+# Maintenance Tasks
+
+- [x] MNT-001: Define maintenance enums.
+- [x] MNT-002: Create maintenance entity.
+- [x] MNT-003: Create database migration.
+- [x] MNT-004: Create maintenance persistence interface (superseded: services inject the concrete DAO).
+- [x] MNT-005: Implement maintenance DAO.
+- [x] MNT-006: Create request and response DTOs.
+- [x] MNT-007: Implement maintenance mapper.
+- [x] MNT-008: Implement maintenance service.
+- [x] MNT-009: Validate vehicle, mechanic and workshop.
+- [x] MNT-010: Validate initial mileage.
+- [x] MNT-011: Prevent duplicate active maintenance per vehicle.
+- [x] MNT-012: Prevent overlapping mechanic schedules.
+- [x] MNT-013: Implement valid state transitions.
+- [x] MNT-014: Implement maintenance completion.
+- [x] MNT-015: Update vehicle availability transactionally.
+- [x] MNT-016: Implement maintenance history queries.
+- [x] MNT-017: Enforce technician assignment restrictions.
+- [x] MNT-018: Add concurrency tests.
+- [x] MNT-019: Add unit tests.
+- [x] MNT-020: Add end-to-end tests.
+- [x] MNT-021: Verify acceptance criteria.

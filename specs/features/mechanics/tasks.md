@@ -1,0 +1,25 @@
+# Mechanics Tasks
+
+- [x] MEC-T001: Create Mechanic entity.
+- [x] MEC-T002: Create mechanic migration.
+- [x] MEC-T003: Define mechanic persistence interface (superseded: services inject the concrete DAO).
+- [x] MEC-T004: Implement Mechanic DAO.
+- [x] MEC-T005: Create mechanic creation DTO.
+- [x] MEC-T006: Create mechanic update DTO.
+- [x] MEC-T007: Create mechanic query DTO.
+- [x] MEC-T008: Create mechanic response DTO.
+- [x] MEC-T009: Implement Mechanic mapper.
+- [x] MEC-T010: Implement MechanicsService.
+- [x] MEC-T011: Implement mechanic registration.
+- [x] MEC-T012: Implement mechanic updates.
+- [x] MEC-T013: Implement mechanic listing and retrieval.
+- [x] MEC-T014: Implement mechanic activation and deactivation.
+- [x] MEC-T015: Validate email uniqueness.
+- [x] MEC-T016: Implement active schedule-conflict queries.
+- [x] MEC-T017: Validate schedules across all workshops.
+- [x] MEC-T018: Prevent assignments to inactive mechanics.
+- [x] MEC-T019: Protect maintenance history.
+- [x] MEC-T020: Test overlapping schedules.
+- [x] MEC-T021: Test adjacent schedule intervals.
+- [x] MEC-T022: Test concurrent assignment attempts.
+- [x] MEC-T023: Verify all acceptance criteria.
