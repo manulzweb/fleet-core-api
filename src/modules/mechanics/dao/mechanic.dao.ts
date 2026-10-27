@@ -1,8 +1,10 @@
+// src/modules/mechanics/dao/mechanic.dao.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Mechanic } from '../entities/mechanic.entity.js';
 
+/** Persistence layer for {@link Mechanic}. */
 @Injectable()
 export class MechanicDao {
   constructor(
@@ -10,6 +12,7 @@ export class MechanicDao {
     private readonly repository: Repository<Mechanic>,
   ) {}
 
+  /** Inserts and returns a new mechanic. */
   async create(data: {
     name: string;
     email: string;
@@ -21,6 +24,7 @@ export class MechanicDao {
     return this.repository.save(mechanic);
   }
 
+  /** Finds by id; pass `manager` to run inside a transaction. */
   async findById(
     id: string,
     manager?: EntityManager,
@@ -31,14 +35,19 @@ export class MechanicDao {
     return repository.findOne({ where: { id } });
   }
 
+  /** Finds by (already normalized) email. */
   async findByEmail(email: string): Promise<Mechanic | null> {
     return this.repository.findOne({ where: { email } });
   }
 
+  /** Finds the mechanic linked to a user account. */
   async findByUserId(userId: string): Promise<Mechanic | null> {
     return this.repository.findOne({ where: { userId } });
   }
 
+  /**
+   * Returns `[rows, total]` ordered by name; `isActive` undefined means no filter.
+   */
   async findPaginated(
     page: number,
     limit: number,
@@ -52,6 +61,7 @@ export class MechanicDao {
     });
   }
 
+  /** Saves changes to an existing mechanic. */
   async update(mechanic: Mechanic): Promise<Mechanic> {
     return this.repository.save(mechanic);
   }

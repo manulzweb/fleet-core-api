@@ -1,3 +1,4 @@
+// src/database/seed.ts
 import * as bcrypt from 'bcrypt';
 import { DataSource, EntityManager } from 'typeorm';
 import dataSource from './data-source.js';
@@ -14,11 +15,12 @@ import {
   VehicleStatus,
 } from '../common/enums/index.js';
 
-// Stable UUIDv7-shaped identifiers keep the seed idempotent.
+/** Builds a stable UUIDv7-shaped identifier so the seed stays idempotent. */
 const id = (n: number) =>
   `019a0000-0000-7000-8000-${String(n).padStart(12, '0')}`;
 const SEED_PASSWORD = process.env.SEED_PASSWORD ?? 'Passw0rd!123';
 
+/** Inserts the entity, or updates it in place when its id already exists. */
 async function upsert<T extends { id: string }>(
   m: EntityManager,
   entity: new () => T,
@@ -29,6 +31,10 @@ async function upsert<T extends { id: string }>(
   await repo.save(Object.assign(existing ?? new entity(), data) as any);
 }
 
+/**
+ * Populates roles, users, mechanics, workshops, vehicles and maintenances with
+ * demo data in one transaction. Safe to run repeatedly.
+ */
 export async function seed(ds: DataSource) {
   const hash = await bcrypt.hash(SEED_PASSWORD, 10);
   await ds.transaction(async (m) => {

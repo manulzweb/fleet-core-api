@@ -1,3 +1,4 @@
+// src/modules/users/users.service.ts
 import {
   ConflictException,
   Injectable,
@@ -10,14 +11,21 @@ import { UpdateUserDto } from './dto/user-update.dto.js';
 import { UserDao } from './dao/user.dao.js';
 import { UserMapper } from './mapper/user.mapper.js';
 
+/** User business logic: lookups, creation with role assignment, updates and activation. */
 @Injectable()
 export class UsersService {
   constructor(private readonly dao: UserDao) {}
 
+  /** Finds a user by (already normalized) email, or `null`. */
   findByEmail(email: string) {
     return this.dao.findByEmail(email);
   }
 
+  /**
+   * Creates an active user with the given role.
+   * @throws ConflictException if the email is already registered (including a race on the unique index).
+   * @throws NotFoundException if the role code does not exist.
+   */
   async create(
     data: { name: string; email: string; passwordHash: string },
     roleCode: RoleCode,
@@ -41,16 +49,25 @@ export class UsersService {
     }
   }
 
+  /**
+   * Loads a user entity by id.
+   * @throws NotFoundException if it does not exist.
+   */
   async getEntity(id: string) {
     const user = await this.dao.findById(id);
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
+  /**
+   * Returns a user as a response DTO.
+   * @throws NotFoundException if it does not exist.
+   */
   async getById(id: string) {
     return UserMapper.toResponse(await this.getEntity(id));
   }
 
+  /** Returns a page of users. */
   async list(q: PaginationQueryDto) {
     return toPage(
       await this.dao.findPaginated(q.page, q.limit),
@@ -59,6 +76,10 @@ export class UsersService {
     );
   }
 
+  /**
+   * Updates a user's name and/or role; omitted fields are left unchanged.
+   * @throws NotFoundException if the user or the role does not exist.
+   */
   async update(id: string, dto: UpdateUserDto) {
     const user = await this.getEntity(id);
     if (dto.name !== undefined) user.name = dto.name;
@@ -71,6 +92,10 @@ export class UsersService {
     return UserMapper.toResponse(await this.dao.update(user));
   }
 
+  /**
+   * Sets the user's active flag.
+   * @throws NotFoundException if the user does not exist.
+   */
   async setStatus(id: string, isActive: boolean) {
     const user = await this.getEntity(id);
     user.isActive = isActive;

@@ -1,3 +1,4 @@
+// src/common/guards/jwt-auth.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -9,6 +10,12 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../modules/users/users.service.js';
 import { IS_PUBLIC_KEY } from '../decorators/index.js';
 
+/**
+ * Global authentication guard. Lets `@Public()` routes through; otherwise
+ * validates the Bearer JWT, loads the user and sets `req.user` (id and role).
+ * @throws UnauthorizedException when the token is missing, invalid, or the
+ * user no longer exists or is inactive.
+ */
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(

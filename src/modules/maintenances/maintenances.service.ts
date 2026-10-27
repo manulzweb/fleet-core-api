@@ -1,3 +1,4 @@
+// src/modules/maintenances/maintenances.service.ts
 import {
   BadRequestException,
   ConflictException,
@@ -29,12 +30,19 @@ import { Maintenance } from './entities/maintenance.entity.js';
 import { MaintenanceMapper } from './mapper/maintenance.mapper.js';
 import { canTransition } from './maintenance-transitions.js';
 
+/**
+ * Maps the DB-level guards (partial unique index / exclusion constraint) to conflict messages.
+ * They back up the application checks against concurrent requests.
+ */
 const DB_CONFLICTS = {
   uq_mnt_vehicle_active: 'The vehicle already has active maintenance',
   excl_mnt_mechanic_overlap:
     'The mechanic has an overlapping maintenance schedule',
 };
 
+/**
+ * Orchestrates maintenance scheduling and status changes across vehicles, mechanics and workshops.
+ */
 @Injectable()
 export class MaintenancesService {
   constructor(
@@ -45,6 +53,18 @@ export class MaintenancesService {
     private readonly workshopDao: WorkshopDao,
   ) {}
 
+  /**
+   * Schedules a new maintenance in SCHEDULED status.
+   *
+   * Runs in a single transaction. The vehicle row is locked (`FOR UPDATE`) to serialize concurrent assignments.
+   * Rules: end must be after start; vehicle, mechanic and workshop must exist and not be inactive;
+   * `initialMileage` cannot be below the vehicle's current mileage; the vehicle may have no other active
+   * (SCHEDULED or IN_PROGRESS) maintenance; and the mechanic may have no active maintenance whose window overlaps.
+   * DB constraint violations from races are translated to ConflictException.
+   * @throws BadRequestException invalid date range or mileage.
+   * @throws NotFoundException unknown vehicle, mechanic or workshop.
+   * @throws ConflictException inactive resource, vehicle already in active maintenance, or mechanic overlap.
+   */
   async create(dto: CreateMaintenanceDto) {
     if (dto.scheduledEndAt <= dto.scheduledStartAt) {
       throw new BadRequestException(
@@ -107,15 +127,23 @@ export class MaintenancesService {
     }
   }
 
+  /**
+   * Returns COMPLETED maintenances of a vehicle, most recently completed first (used by integrations).
+   */
   findCompletedByVehicle(vehicleId: string): Promise<Maintenance[]> {
     return this.dao.findCompletedByVehicle(vehicleId);
   }
 
+  /** Resolves the mechanic record linked to the user, or null if none. */
   private async mechanicIdOf(user: AuthUser) {
     const mech = await this.mechanicDao.findByUserId(user.id);
     return mech?.id ?? null;
   }
 
+  /**
+   * Lists maintenances with optional filters. A TECHNICIAN is always scoped to their own mechanic
+   * (an empty page if they have no mechanic record), overriding any `mechanicId` filter.
+   */
   async list(q: MaintenanceQueryDto, user: AuthUser) {
     const filter: MaintenanceFilter = {};
     if (q.vehicleId !== undefined) filter.vehicleId = q.vehicleId;
@@ -133,6 +161,11 @@ export class MaintenancesService {
     );
   }
 
+  /**
+   * Gets a maintenance.
+   * @throws NotFoundException if missing.
+   * @throws ForbiddenException if a non-ADMIN user does not own it.
+   */
   async getById(id: string, user: AuthUser) {
     const m = await this.dao.findById(id);
     if (!m) throw new NotFoundException('Maintenance not found');
@@ -140,6 +173,10 @@ export class MaintenancesService {
     return MaintenanceMapper.toResponse(m);
   }
 
+  /**
+   * ADMIN may access anything; others only maintenances assigned to their linked mechanic.
+   * @throws ForbiddenException otherwise.
+   */
   private async assertAccess(m: Maintenance, user: AuthUser) {
     if (user.role === RoleCode.ADMIN) return;
     if ((await this.mechanicIdOf(user)) !== m.mechanicId) {
@@ -149,6 +186,10 @@ export class MaintenancesService {
     }
   }
 
+  /**
+   * Paginated maintenance history of a vehicle, with the same access scoping as {@link list}.
+   * @throws NotFoundException if the vehicle does not exist.
+   */
   async historyByVehicle(
     vehicleId: string,
     q: MaintenanceQueryDto,
@@ -160,6 +201,20 @@ export class MaintenancesService {
     return this.list({ ...q, vehicleId }, user);
   }
 
+  /**
+   * Moves a maintenance to a new status and syncs the vehicle accordingly.
+   *
+   * Runs in one transaction holding pessimistic write locks on the maintenance and then its vehicle.
+   * - The transition must be allowed by {@link canTransition}.
+   * - IN_PROGRESS requires the vehicle to be AVAILABLE and marks it IN_MAINTENANCE.
+   * - COMPLETED requires workPerformed, finalCost, completedAt and finalMileage (finalMileage >= initialMileage),
+   *   raises the vehicle mileage if higher, and frees the vehicle if it was IN_MAINTENANCE.
+   * - CANCELLED frees the vehicle if it was IN_MAINTENANCE.
+   * @throws NotFoundException if missing.
+   * @throws ForbiddenException if a non-ADMIN user does not own it.
+   * @throws ConflictException on an invalid transition or unavailable vehicle.
+   * @throws BadRequestException on missing or inconsistent completion data.
+   */
   async changeStatus(
     id: string,
     dto: UpdateMaintenanceStatusDto,

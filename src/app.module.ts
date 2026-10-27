@@ -1,3 +1,4 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
@@ -18,6 +19,11 @@ import { UsersModule } from './modules/users/users.module.js';
 import { VehiclesModule } from './modules/vehicles/vehicles.module.js';
 import { WorkshopsModule } from './modules/workshops/workshops.module.js';
 
+/**
+ * Root module: wires configuration, the Postgres connection, throttling and the
+ * feature modules, and registers the global throttler guard, exception filter
+ * and response interceptor.
+ */
 @Module({
   imports: [
     ConfigModule.forRoot({

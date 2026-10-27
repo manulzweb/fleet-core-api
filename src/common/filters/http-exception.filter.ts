@@ -1,3 +1,4 @@
+// src/common/filters/http-exception.filter.ts
 import {
   ArgumentsHost,
   Catch,
@@ -7,6 +8,11 @@ import {
   Logger,
 } from '@nestjs/common';
 
+/**
+ * Catches every exception and replies with the standard error envelope
+ * (`success: false`, status, message, path, timestamp). Non-HTTP errors are
+ * logged and reported as a generic 500 without leaking details.
+ */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);

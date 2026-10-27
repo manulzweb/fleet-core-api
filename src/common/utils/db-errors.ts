@@ -1,6 +1,13 @@
+// src/common/utils/db-errors.ts
 import { ConflictException } from '@nestjs/common';
 
-/** Translates PostgreSQL constraint violations into descriptive 409 responses. */
+/**
+ * Translates PostgreSQL unique (23505) and exclusion (23P01) violations into
+ * 409 responses, using the message mapped to the violated constraint name.
+ * Any other error is rethrown unchanged.
+ * @param messages Constraint name to conflict message.
+ * @throws ConflictException on unique/exclusion violations.
+ */
 export function rethrowDbConflict(err: any, messages: Record<string, string>) {
   const code = err?.code ?? err?.driverError?.code;
   const constraint = err?.constraint ?? err?.driverError?.constraint;

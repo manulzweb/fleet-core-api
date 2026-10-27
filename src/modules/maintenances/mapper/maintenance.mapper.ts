@@ -1,6 +1,8 @@
+// src/modules/maintenances/mapper/maintenance.mapper.ts
 import { MaintenanceResponseDto } from '../dto/maintenance-response.dto.js';
 import { Maintenance } from '../entities/maintenance.entity.js';
 
+/** Maps Maintenance entities to API shapes. */
 export const MaintenanceMapper = {
   toResponse(m: Maintenance): MaintenanceResponseDto {
     return {

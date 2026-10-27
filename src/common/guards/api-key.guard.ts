@@ -1,3 +1,4 @@
+// src/common/guards/api-key.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -7,6 +8,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { timingSafeEqual } from 'node:crypto';
 
+/**
+ * Authenticates machine clients via the `x-api-key` header, compared in
+ * constant time against the comma-separated `API_KEYS` setting.
+ * @throws UnauthorizedException when the key is missing or not recognised.
+ */
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
   private readonly keys: Buffer[];

@@ -1,3 +1,4 @@
+// src/modules/users/users.service.spec.ts
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { RoleCode } from '../../common/enums/index.js';
 import { UsersService } from './users.service.js';

@@ -1,3 +1,4 @@
+// test/auth.e2e-spec.ts
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {

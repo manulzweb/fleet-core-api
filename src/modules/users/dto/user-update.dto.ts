@@ -1,3 +1,4 @@
+// src/modules/users/dto/user-update.dto.ts
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
@@ -8,6 +9,7 @@ import {
 } from 'class-validator';
 import { RoleCode } from '../../../common/enums/index.js';
 
+/** Partial update of a user; every field is optional. */
 export class UpdateUserDto {
   @ApiPropertyOptional()
   @IsOptional()
