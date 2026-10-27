@@ -5,7 +5,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration.js';
 import { validate } from './config/env.validation.js';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { globalLimit, THROTTLE_TTL_MS } from './config/throttle.js';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
 import { AuthModule } from './modules/auth/auth.module.js';
@@ -41,6 +43,8 @@ import { WorkshopsModule } from './modules/workshops/workshops.module.js';
       }),
     }),
 
+    ThrottlerModule.forRoot([{ ttl: THROTTLE_TTL_MS, limit: globalLimit }]),
+
     UsersModule,
     AuthModule,
     VehiclesModule,
@@ -52,6 +56,7 @@ import { WorkshopsModule } from './modules/workshops/workshops.module.js';
   controllers: [AppController],
   providers: [
     AppService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
     { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
   ],

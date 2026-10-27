@@ -76,6 +76,10 @@ export class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   API_KEYS: string;
+
+  @IsString()
+  @IsOptional()
+  CORS_ORIGINS?: string;
 }
 
 export function validate(config: Record<string, unknown>) {
