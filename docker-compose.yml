@@ -37,9 +37,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-fleetcore}
       DB_SYNCHRONIZE: "false"
-      JWT_SECRET: ${JWT_SECRET:-cambia-este-secreto}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
-      API_KEYS: ${API_KEYS:-demo-key-partner-1,demo-key-partner-2}
+      API_KEYS: ${API_KEYS:?API_KEYS is required}
     depends_on:
       postgres:
         condition: service_healthy
