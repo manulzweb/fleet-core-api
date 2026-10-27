@@ -1,10 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsInt, IsString, IsUUID, Max, Min, MinLength } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsString,
+  IsUUID,
+  Max,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { MaintenanceType } from '../../../common/enums/index.js';
 
 export class CreateMaintenanceDto {
-  @ApiProperty({ enum: MaintenanceType }) @IsEnum(MaintenanceType) type: MaintenanceType;
+  @ApiProperty({ enum: MaintenanceType })
+  @IsEnum(MaintenanceType)
+  type: MaintenanceType;
   @ApiProperty() @IsString() @MinLength(1) description: string;
 
   @ApiProperty()

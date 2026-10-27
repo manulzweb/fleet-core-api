@@ -29,7 +29,9 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.users.findByEmail(dto.email);
     const ok =
-      !!user && user.isActive && (await bcrypt.compare(dto.password, user.passwordHash));
+      !!user &&
+      user.isActive &&
+      (await bcrypt.compare(dto.password, user.passwordHash));
     if (!ok) throw new UnauthorizedException('Invalid credentials');
     const accessToken = await this.jwt.signAsync({
       sub: user.id,

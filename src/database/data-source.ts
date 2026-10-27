@@ -7,7 +7,14 @@ import { Workshop } from '../modules/workshops/entities/workshop.entity.js';
 import { Maintenance } from '../modules/maintenances/entities/maintenance.entity.js';
 import { InitialSchema1760000000000 } from './migrations/1760000000000-InitialSchema.js';
 
-export const entities = [Role, UserEntity, Vehicle, Mechanic, Workshop, Maintenance];
+export const entities = [
+  Role,
+  UserEntity,
+  Vehicle,
+  Mechanic,
+  Workshop,
+  Maintenance,
+];
 export const migrations = [InitialSchema1760000000000];
 
 export const dataSourceOptions = (): DataSourceOptions => ({

@@ -18,7 +18,11 @@ export class WorkshopsService {
 
   async list(q: WorkshopQueryDto, role: RoleCode) {
     const onlyActive = !(role === RoleCode.ADMIN && q.includeInactive);
-    return toPage(await this.dao.findPaginated(q.page, q.limit, onlyActive), q, WorkshopMapper.toResponse);
+    return toPage(
+      await this.dao.findPaginated(q.page, q.limit, onlyActive),
+      q,
+      WorkshopMapper.toResponse,
+    );
   }
 
   async getEntity(id: string) {

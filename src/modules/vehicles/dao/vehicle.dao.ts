@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { ACTIVE_MAINTENANCE_STATUSES, VehicleStatus } from '../../../common/enums/index.js';
+import {
+  ACTIVE_MAINTENANCE_STATUSES,
+  VehicleStatus,
+} from '../../../common/enums/index.js';
 import { Maintenance } from '../../maintenances/entities/maintenance.entity.js';
 import { Vehicle } from '../entities/vehicle.entity.js';
 
 @Injectable()
 export class VehicleDao {
-  constructor(@InjectRepository(Vehicle) private readonly repository: Repository<Vehicle>) {}
+  constructor(
+    @InjectRepository(Vehicle) private readonly repository: Repository<Vehicle>,
+  ) {}
 
   async create(data: {
     plate: string;
@@ -22,13 +27,20 @@ export class VehicleDao {
   }
 
   async findById(id: string, manager?: EntityManager): Promise<Vehicle | null> {
-    const repository = manager ? manager.getRepository(Vehicle) : this.repository;
+    const repository = manager
+      ? manager.getRepository(Vehicle)
+      : this.repository;
     return repository.findOne({ where: { id } });
   }
 
   /** Locks the vehicle row (pessimistic_write); must run inside a transaction. */
-  async findByIdForUpdate(id: string, manager: EntityManager): Promise<Vehicle | null> {
-    return manager.getRepository(Vehicle).findOne({ where: { id }, lock: { mode: 'pessimistic_write' } });
+  async findByIdForUpdate(
+    id: string,
+    manager: EntityManager,
+  ): Promise<Vehicle | null> {
+    return manager
+      .getRepository(Vehicle)
+      .findOne({ where: { id }, lock: { mode: 'pessimistic_write' } });
   }
 
   async findByPlate(plate: string): Promise<Vehicle | null> {
@@ -39,7 +51,11 @@ export class VehicleDao {
     return this.repository.existsBy({ id });
   }
 
-  async findPaginated(page: number, limit: number, status?: VehicleStatus): Promise<[Vehicle[], number]> {
+  async findPaginated(
+    page: number,
+    limit: number,
+    status?: VehicleStatus,
+  ): Promise<[Vehicle[], number]> {
     return this.repository.findAndCount({
       where: status ? { status } : {},
       order: { plate: 'ASC' },
@@ -48,7 +64,10 @@ export class VehicleDao {
     });
   }
 
-  async hasActiveMaintenance(vehicleId: string, manager?: EntityManager): Promise<boolean> {
+  async hasActiveMaintenance(
+    vehicleId: string,
+    manager?: EntityManager,
+  ): Promise<boolean> {
     return (manager ?? this.repository.manager)
       .getRepository(Maintenance)
       .createQueryBuilder('m')
@@ -58,7 +77,9 @@ export class VehicleDao {
   }
 
   async update(vehicle: Vehicle, manager?: EntityManager): Promise<Vehicle> {
-    const repository = manager ? manager.getRepository(Vehicle) : this.repository;
+    const repository = manager
+      ? manager.getRepository(Vehicle)
+      : this.repository;
     return repository.save(vehicle);
   }
 }

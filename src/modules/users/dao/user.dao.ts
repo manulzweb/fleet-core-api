@@ -7,7 +7,8 @@ import { UserEntity } from '../entities/user.entity.js';
 @Injectable()
 export class UserDao {
   constructor(
-    @InjectRepository(UserEntity) private readonly repository: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly repository: Repository<UserEntity>,
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
   ) {}
 
@@ -31,7 +32,10 @@ export class UserDao {
     return this.repository.findOne({ where: { email } });
   }
 
-  async findPaginated(page: number, limit: number): Promise<[UserEntity[], number]> {
+  async findPaginated(
+    page: number,
+    limit: number,
+  ): Promise<[UserEntity[], number]> {
     return this.repository.findAndCount({
       order: { createdAt: 'ASC', id: 'ASC' },
       skip: (page - 1) * limit,

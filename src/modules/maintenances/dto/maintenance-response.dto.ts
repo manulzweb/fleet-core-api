@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MaintenanceStatus, MaintenanceType } from '../../../common/enums/index.js';
+import {
+  MaintenanceStatus,
+  MaintenanceType,
+} from '../../../common/enums/index.js';
 
 export class MaintenanceResponseDto {
   @ApiProperty() id: string;

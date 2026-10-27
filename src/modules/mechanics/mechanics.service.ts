@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { toPage } from '../../common/dto/page.js';
 import { rethrowDbConflict } from '../../common/utils/db-errors.js';
 import { UsersService } from '../users/users.service.js';
@@ -23,19 +27,29 @@ export class MechanicsService {
   private async assertUnique(email?: string, userId?: string, selfId?: string) {
     if (email) {
       const other = await this.dao.findByEmail(email);
-      if (other && other.id !== selfId) throw new ConflictException('A mechanic with this email already exists');
+      if (other && other.id !== selfId)
+        throw new ConflictException(
+          'A mechanic with this email already exists',
+        );
     }
     if (userId) {
       await this.users.getEntity(userId);
       const other = await this.dao.findByUserId(userId);
-      if (other && other.id !== selfId) throw new ConflictException('This user is already linked to another mechanic');
+      if (other && other.id !== selfId)
+        throw new ConflictException(
+          'This user is already linked to another mechanic',
+        );
     }
   }
 
   async create(dto: CreateMechanicDto) {
     await this.assertUnique(dto.email, dto.userId);
     try {
-      const m = await this.dao.create({ ...dto, isActive: true, userId: dto.userId ?? null });
+      const m = await this.dao.create({
+        ...dto,
+        isActive: true,
+        userId: dto.userId ?? null,
+      });
       return MechanicMapper.toResponse(m);
     } catch (e) {
       rethrowDbConflict(e, CONFLICTS);
@@ -43,7 +57,11 @@ export class MechanicsService {
   }
 
   async list(q: MechanicQueryDto) {
-    return toPage(await this.dao.findPaginated(q.page, q.limit, q.isActive), q, MechanicMapper.toResponse);
+    return toPage(
+      await this.dao.findPaginated(q.page, q.limit, q.isActive),
+      q,
+      MechanicMapper.toResponse,
+    );
   }
 
   async getEntity(id: string) {

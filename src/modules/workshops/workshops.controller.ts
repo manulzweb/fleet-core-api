@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles, User } from '../../common/decorators/index.js';
 import { RoleCode } from '../../common/enums/index.js';
@@ -32,13 +41,19 @@ export class WorkshopsController {
 
   @Roles(RoleCode.ADMIN)
   @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateWorkshopDto) {
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateWorkshopDto,
+  ) {
     return this.workshops.update(id, dto);
   }
 
   @Roles(RoleCode.ADMIN)
   @Patch(':id/status')
-  status(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateActiveStatusDto) {
+  status(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateActiveStatusDto,
+  ) {
     return this.workshops.setActive(id, dto.isActive);
   }
 }
