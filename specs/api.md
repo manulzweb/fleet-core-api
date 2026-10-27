@@ -202,7 +202,201 @@ Base path: `/api/v1/workshops`
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
 | POST | `/workshops` | ADMIN | Register workshop |
-| GET | `/workshops`
+| GET | `/workshops` | Authenticated | List workshops |
+| GET | `/workshops/:id` | Authenticated | Retrieve workshop |
+| PATCH | `/workshops/:id` | ADMIN | Update workshop |
+| PATCH | `/workshops/:id/status` | ADMIN | Activate or deactivate workshop |
+
+All `:id` path parameters must be UUIDs (otherwise `400`).
+
+### Create Workshop
+
+Request (`name`: 1-120 chars, `address`: 1-255 chars):
+
+```json
+{
+  "name": "Taller Norte",
+  "address": "Calle 100 # 15-20"
+}
+```
+
+Response `201 Created` (`data`):
+
+```json
+{
+  "id": "019a0000-0000-7000-8000-000000000004",
+  "name": "Taller Norte",
+  "address": "Calle 100 # 15-20",
+  "isActive": true
+}
+```
+
+### List Workshops
+
+`GET /workshops?page=1&limit=20&includeInactive=true`
+
+- `page` (default `1`, min 1) and `limit` (default `20`, min 1, max 100).
+- `includeInactive` is honored only for `ADMIN`; every other role always receives active workshops only.
+
+Response `200 OK` (`data`):
+
+```json
+{
+  "items": [
+    {
+      "id": "019a0000-0000-7000-8000-000000000004",
+      "name": "Taller Norte",
+      "address": "Calle 100 # 15-20",
+      "isActive": true
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "limit": 20
+}
+```
+
+### Update Workshop
+
+`PATCH /workshops/:id` accepts any subset of `name` and `address`. Returns `200` with the workshop (same shape as above).
+
+### Update Workshop Status
+
+Request:
+
+```json
+{
+  "isActive": false
+}
+```
+
+Response `200 OK`: the full workshop object with the new `isActive` value.
+
+Inactive workshops cannot receive new maintenance assignments. A workshop that does not exist returns `404`.
+
+## 7. Maintenances
+
+Base path: `/api/v1`
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/maintenances` | ADMIN | Schedule a maintenance |
+| GET | `/maintenances` | Authenticated | List maintenances |
+| GET | `/maintenances/:id` | Authenticated | Retrieve a maintenance |
+| PATCH | `/maintenances/:id/status` | Authenticated | Change maintenance status |
+| GET | `/vehicles/:vehicleId/maintenances` | Authenticated | Maintenance history of a vehicle |
+
+Access scope:
+
+- `ADMIN` can read and change every maintenance.
+- `TECHNICIAN` only sees maintenances assigned to the mechanic linked to their user. A technician without a linked mechanic gets an empty list; reading or changing another mechanic's maintenance returns `403`.
+
+Maintenance types: `PREVENTIVE`, `CORRECTIVE`. Maintenance statuses: `SCHEDULED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`.
+
+### Create Maintenance
+
+Request (all fields required; `initialMileage` is an integer >= 0; dates are ISO 8601; the three ids are UUIDs):
+
+```json
+{
+  "type": "PREVENTIVE",
+  "description": "Oil and filter replacement",
+  "initialMileage": 45000,
+  "scheduledStartAt": "2026-11-02T08:00:00.000Z",
+  "scheduledEndAt": "2026-11-02T12:00:00.000Z",
+  "vehicleId": "019a0000-0000-7000-8000-000000000040",
+  "mechanicId": "019a0000-0000-7000-8000-000000000020",
+  "workshopId": "019a0000-0000-7000-8000-000000000030"
+}
+```
+
+Response `201 Created` (`data`). The maintenance is created as `SCHEDULED`; closure fields are `null`:
+
+```json
+{
+  "id": "019a0000-0000-7000-8000-000000000060",
+  "type": "PREVENTIVE",
+  "description": "Oil and filter replacement",
+  "initialMileage": 45000,
+  "scheduledStartAt": "2026-11-02T08:00:00.000Z",
+  "scheduledEndAt": "2026-11-02T12:00:00.000Z",
+  "status": "SCHEDULED",
+  "vehicleId": "019a0000-0000-7000-8000-000000000040",
+  "mechanicId": "019a0000-0000-7000-8000-000000000020",
+  "workshopId": "019a0000-0000-7000-8000-000000000030",
+  "workPerformed": null,
+  "finalCost": null,
+  "completedAt": null,
+  "finalMileage": null
+}
+```
+
+Errors:
+
+- `400`: `scheduledEndAt` is not later than `scheduledStartAt`; `initialMileage` is lower than the vehicle's current mileage; invalid body.
+- `404`: vehicle, mechanic or workshop not found.
+- `409`: vehicle is `INACTIVE`; mechanic or workshop is inactive; the vehicle already has a `SCHEDULED`/`IN_PROGRESS` maintenance; the mechanic has an overlapping `SCHEDULED`/`IN_PROGRESS` maintenance (adjacent windows do not overlap). Concurrent requests that violate the database constraints are also reported as `409`.
+
+### List Maintenances
+
+`GET /maintenances?page=1&limit=20&vehicleId=<uuid>&mechanicId=<uuid>&status=SCHEDULED`
+
+All filters are optional. For `TECHNICIAN`, `mechanicId` is overridden with their own mechanic. Results are ordered by `scheduledStartAt` descending. Response `200 OK` (`data`) uses the paginated shape `{ items, total, page, limit }`, where each item has the maintenance shape shown above.
+
+### Get Maintenance
+
+`GET /maintenances/:id` returns `200` with the maintenance shape, `404` if it does not exist, `403` if a technician does not own it.
+
+### Maintenance History of a Vehicle
+
+`GET /vehicles/:vehicleId/maintenances` accepts the same query parameters as the list endpoint (the path `vehicleId` takes precedence) and returns the same paginated shape. Returns `404` if the vehicle does not exist.
+
+### Change Maintenance Status
+
+`PATCH /maintenances/:id/status`
+
+Allowed transitions:
+
+| From | To |
+|---|---|
+| `SCHEDULED` | `IN_PROGRESS`, `CANCELLED` |
+| `IN_PROGRESS` | `COMPLETED`, `CANCELLED` |
+| `COMPLETED` | none |
+| `CANCELLED` | none |
+
+Any other transition returns `409` (`Invalid status transition <from> -> <to>`).
+
+Request to start or cancel:
+
+```json
+{
+  "status": "IN_PROGRESS"
+}
+```
+
+Request to complete (`workPerformed`, `finalCost`, `completedAt` and `finalMileage` are required for `COMPLETED`, otherwise `400`; `finalCost` >= 0 with at most 2 decimals; `finalMileage` must not be lower than `initialMileage`, otherwise `400`):
+
+```json
+{
+  "status": "COMPLETED",
+  "workPerformed": "Oil and filter replaced",
+  "finalCost": 350000,
+  "completedAt": "2026-11-02T11:30:00.000Z",
+  "finalMileage": 45010
+}
+```
+
+Response `200 OK` (`data`): the updated maintenance (same shape as in Create Maintenance, with the closure fields filled when completed).
+
+Side effects on the vehicle (applied in the same transaction):
+
+- `IN_PROGRESS`: the vehicle must be `AVAILABLE` (otherwise `409`) and becomes `IN_MAINTENANCE`.
+- `COMPLETED`: the vehicle's `currentMileage` becomes the greater of its current value and `finalMileage`; an `IN_MAINTENANCE` vehicle returns to `AVAILABLE`.
+- `CANCELLED` from `IN_PROGRESS`: an `IN_MAINTENANCE` vehicle returns to `AVAILABLE`.
+
+Errors: `400` (missing/invalid completion data), `403` (technician does not own the maintenance), `404`, `409` (invalid transition, vehicle not available, or database constraint violation).
+
+See [`specs/decisions/spec-discrepancies.md`](decisions/spec-discrepancies.md) for the places where the implementation intentionally differs from the original specification.
 
 ## Response Format
 
