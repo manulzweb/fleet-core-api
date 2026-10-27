@@ -28,8 +28,16 @@ Seed users: `admin@fleetcore.local`, `tech1@fleetcore.local`, `tech2@fleetcore.l
 
 ```bash
 npm test          # unit
-npm run test:e2e  # needs PostgreSQL; uses database fleetcore_test (created automatically)
+npm run test:int  # DAO integration tests, needs PostgreSQL
+npm run test:e2e  # needs PostgreSQL
+npm run test:cov  # unit + coverage thresholds
 ```
+
+`test:int` and `test:e2e` use one database per vitest worker, named
+`${DB_NAME_TEST:-fleetcore_test}_<worker id>` (e.g. `fleetcore_test_1`), created
+automatically, so test files run in parallel. The DB user needs `CREATE DATABASE`
+(the CI `postgres` superuser does); connection settings still come from
+`DB_HOST`, `DB_PORT`, `DB_USERNAME` and `DB_PASSWORD`.
 
 ## Endpoints (`/api/v1`)
 
