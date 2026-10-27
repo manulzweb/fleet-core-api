@@ -1,0 +1,25 @@
+# Authentication Tasks
+
+- [x] AUTH-T001: Configure JWT environment variables.
+- [x] AUTH-T002: Configure bcrypt.
+- [x] AUTH-T003: Create registration DTO.
+- [x] AUTH-T004: Create login DTO.
+- [x] AUTH-T005: Create authentication response DTO.
+- [x] AUTH-T006: Implement password hashing.
+- [x] AUTH-T007: Implement credential validation.
+- [x] AUTH-T008: Implement registration service.
+- [x] AUTH-T009: Implement login service.
+- [x] AUTH-T010: Implement AuthController.
+- [x] AUTH-T011: Implement JWT generation and validation.
+- [x] AUTH-T012: Implement @Public() decorator.
+- [x] AUTH-T013: Implement @Roles() decorator.
+- [x] AUTH-T014: Implement @User() decorator.
+- [x] AUTH-T015: Implement JwtAuthGuard.
+- [x] AUTH-T016: Implement RolesGuard.
+- [x] AUTH-T017: Implement ApiKeyGuard.
+- [x] AUTH-T018: Protect the integration endpoint with an API key.
+- [x] AUTH-T019: Test invalid credentials.
+- [x] AUTH-T020: Test missing, invalid and expired JWTs.
+- [x] AUTH-T021: Test role restrictions.
+- [x] AUTH-T022: Test invalid API keys.
+- [x] AUTH-T023: Verify all acceptance criteria.
